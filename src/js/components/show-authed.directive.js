@@ -6,10 +6,11 @@ function ShowAuthed(User) {
 		link: function(scope, element, attrs) {
 			scope.User = User;
 
+			// $watch watches User.current for a change. When it does it invokes fxn
 			scope.$watch('User.current', function(val) {
 				// If user is detected
 				if (val) {
-					if (attrs.ShowAuthed === 'true') {
+					if (attrs.showAuthed === 'true') {
 						element.css({display: 'inherit'});
 					} else {
 						element.css({display: 'none'});
@@ -26,3 +27,5 @@ function ShowAuthed(User) {
 		}
 	};
 }
+
+export default ShowAuthed; 
