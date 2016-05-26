@@ -35755,7 +35755,12 @@ function AppConfig($httpProvider, $stateProvider, $locationProvider, $urlRouterP
 
   $stateProvider.state('app', {
     abstract: true,
-    templateUrl: 'layout/app-view.html'
+    templateUrl: 'layout/app-view.html',
+    resolve: {
+      auth: ["User", function auth(User) {
+        return User.verifyAuth();
+      }]
+    }
   });
 
   $urlRouterProvider.otherwise('/');
@@ -36067,6 +36072,10 @@ var _user = require('./user.service');
 
 var _user2 = _interopRequireDefault(_user);
 
+var _jwt = require('./jwt.service');
+
+var _jwt2 = _interopRequireDefault(_jwt);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Create the module where our functionality can attach to
@@ -36076,9 +36085,55 @@ var servicesModule = _angular2.default.module('app.services', []);
 
 servicesModule.service('User', _user2.default);
 
+servicesModule.service('JWT', _jwt2.default);
+
 exports.default = servicesModule;
 
-},{"./user.service":28,"angular":3}],28:[function(require,module,exports){
+},{"./jwt.service":28,"./user.service":29,"angular":3}],28:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var JWT = function () {
+	JWT.$inject = ["AppConstants", "$window"];
+	function JWT(AppConstants, $window) {
+		'ngInject';
+
+		_classCallCheck(this, JWT);
+
+		this._AppConstants = AppConstants;
+		this._$window = $window;
+	}
+
+	_createClass(JWT, [{
+		key: 'save',
+		value: function save(token) {
+			this._$window.localStorage[this._AppConstants.jwtKey] = token;
+		}
+	}, {
+		key: 'get',
+		value: function get() {
+			return this._$window.localStorage[this._AppConstants.jwtKey];
+		}
+	}, {
+		key: 'destroy',
+		value: function destroy() {
+			this._$window.localStorage.removeItem(this._AppConstants.jwtKey);
+		}
+	}]);
+
+	return JWT;
+}();
+
+exports.default = JWT;
+
+},{}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36090,14 +36145,17 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var User = function () {
-	User.$inject = ["AppConstants", "$http"];
-	function User(AppConstants, $http) {
+	User.$inject = ["JWT", "AppConstants", "$http", "$state", "$q"];
+	function User(JWT, AppConstants, $http, $state, $q) {
 		'ngInject';
 
 		_classCallCheck(this, User);
 
 		this._AppConstants = AppConstants; // underscore indicates a service
 		this._$http = $http;
+		this._JWT = JWT;
+		this._$state = $state;
+		this._$q = $q;
 
 		//Object to store our user properties
 		this.current = null;
@@ -36120,11 +36178,62 @@ var User = function () {
 			}).then(
 			//on success
 			function (res) {
+				// Set the JWT
+				_this._JWT.save(res.data.user.token);
 				// Store the user's info for easy lookup
 				_this.current = res.data.user;
 
 				return res;
 			});
+		}
+	}, {
+		key: 'logout',
+		value: function logout() {
+			this.current = null;
+			this._JWT.destroy();
+			// Do a hard reload of current state to ensure all data is flushed
+			this._$state.go(this._$state.$current, null, { reload: true });
+		}
+	}, {
+		key: 'verifyAuth',
+		value: function verifyAuth() {
+			var _this2 = this;
+
+			var deferred = this._$q.defer();
+
+			// Check for JWT token first
+			if (!this._JWT.get()) {
+				deferred.resolve(false);
+				return deferred.promise;
+			}
+
+			// If there's a JWT and user is already set
+			if (this.current) {
+				deferred.resolve(true);
+
+				// If current user isn't set, fetch from server
+				// If server !401, set current user and resolve promise
+			} else {
+					this._$http({
+						url: this._AppConstants.api + '/user',
+						method: 'GET',
+						headers: {
+							Authorization: 'Token ' + this._JWT.get()
+						}
+					}).then(function (res) {
+						_this2.current = res.data.user;
+						deferred.resolve(true);
+					},
+					// IF an error, means token was invalid
+					function (err) {
+						_this2._JWT.destroy();
+						deferred.resolve(false);
+					}
+					//Reject automatically handled by auth interceptor
+					//Will boot them to homepage
+					);
+				}
+			return deferred.promise;
 		}
 	}]);
 
