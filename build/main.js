@@ -35473,7 +35473,7 @@ _angular2.default.bootstrap(document, ['app'], {
   strictDi: true
 });
 
-},{"./article":7,"./auth":10,"./components":11,"./config/app.config":14,"./config/app.constants":15,"./config/app.run":16,"./config/app.templates":17,"./home":20,"./layout":23,"./profile":24,"./services":27,"angular":3,"angular-ui-router":1}],5:[function(require,module,exports){
+},{"./article":7,"./auth":10,"./components":11,"./config/app.config":14,"./config/app.constants":15,"./config/app.run":16,"./config/app.templates":17,"./home":21,"./layout":24,"./profile":25,"./services":28,"angular":3,"angular-ui-router":1}],5:[function(require,module,exports){
 'use strict';
 
 ArticleConfig.$inject = ["$stateProvider"];
@@ -35744,8 +35744,19 @@ AppConfig.$inject = ["$httpProvider", "$stateProvider", "$locationProvider", "$u
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _auth = require('./auth.interceptor');
+
+var _auth2 = _interopRequireDefault(_auth);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function AppConfig($httpProvider, $stateProvider, $locationProvider, $urlRouterProvider) {
   'ngInject';
+
+  // Push our interceptor for auth
+
+  $httpProvider.interceptors.push(_auth2.default);
 
   /*
     If you don't want hashbang routing, uncomment this line.
@@ -35768,7 +35779,7 @@ function AppConfig($httpProvider, $stateProvider, $locationProvider, $urlRouterP
 
 exports.default = AppConfig;
 
-},{}],15:[function(require,module,exports){
+},{"./auth.interceptor":18}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35829,6 +35840,40 @@ angular.module("templates", []).run(["$templateCache", function ($templateCache)
 },{}],18:[function(require,module,exports){
 'use strict';
 
+authInterceptor.$inject = ["JWT", "AppConstants", "$window", "$q"];
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+function authInterceptor(JWT, AppConstants, $window, $q) {
+	'ngInject';
+
+	return {
+		//automatically attach auth header
+		request: function request(config) {
+			if (config.url.indexOf(AppConstants.api) === 0 && JWT.get()) {
+				config.headers.Authorization = 'Token ' + JWT.get();
+			}
+			return config;
+		},
+
+		// Handle 401
+		responseError: function responseError(rejection) {
+			if (rejection.status === 401) {
+				// clear any JWT being stored
+				JWT.destroy();
+				// hard refresh
+				$window.location.reload();
+			}
+			return $q.reject(rejection);
+		}
+	};
+}
+
+exports.default = authInterceptor;
+
+},{}],19:[function(require,module,exports){
+'use strict';
+
 HomeConfig.$inject = ["$stateProvider"];
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -35847,7 +35892,7 @@ function HomeConfig($stateProvider) {
 
 exports.default = HomeConfig;
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35867,7 +35912,7 @@ HomeCtrl.$inject = ["AppConstants"];
 
 exports.default = HomeCtrl;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35901,7 +35946,7 @@ homeModule.controller('HomeCtrl', _home4.default);
 
 exports.default = homeModule;
 
-},{"./home.config":18,"./home.controller":19,"angular":3}],21:[function(require,module,exports){
+},{"./home.config":19,"./home.controller":20,"angular":3}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35929,7 +35974,7 @@ var AppFooter = {
 
 exports.default = AppFooter;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35954,7 +35999,7 @@ var AppHeader = {
 
 exports.default = AppHeader;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -35986,7 +36031,7 @@ layoutModule.component('appFooter', _footer2.default);
 
 exports.default = layoutModule;
 
-},{"./footer.component":21,"./header.component":22,"angular":3}],24:[function(require,module,exports){
+},{"./footer.component":22,"./header.component":23,"angular":3}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36020,7 +36065,7 @@ profileModule.controller('ProfileCtrl', _profile4.default);
 
 exports.default = profileModule;
 
-},{"./profile.config":25,"./profile.controller":26,"angular":3}],25:[function(require,module,exports){
+},{"./profile.config":26,"./profile.controller":27,"angular":3}],26:[function(require,module,exports){
 'use strict';
 
 ProfileConfig.$inject = ["$stateProvider"];
@@ -36040,7 +36085,7 @@ function ProfileConfig($stateProvider) {
 
 exports.default = ProfileConfig;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36057,7 +36102,7 @@ var ProfileCtrl = function ProfileCtrl() {
 
 exports.default = ProfileCtrl;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36089,7 +36134,7 @@ servicesModule.service('JWT', _jwt2.default);
 
 exports.default = servicesModule;
 
-},{"./jwt.service":28,"./user.service":29,"angular":3}],28:[function(require,module,exports){
+},{"./jwt.service":29,"./user.service":30,"angular":3}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36133,7 +36178,7 @@ var JWT = function () {
 
 exports.default = JWT;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36216,10 +36261,8 @@ var User = function () {
 			} else {
 					this._$http({
 						url: this._AppConstants.api + '/user',
-						method: 'GET',
-						headers: {
-							Authorization: 'Token ' + this._JWT.get()
-						}
+						method: 'GET'
+
 					}).then(function (res) {
 						_this2.current = res.data.user;
 						deferred.resolve(true);
