@@ -36301,6 +36301,32 @@ var Profile = function () {
 				return res.data.profile;
 			});
 		}
+
+		// Follow a user
+
+	}, {
+		key: 'follow',
+		value: function follow(username) {
+			return this._$http({
+				url: this._AppConstants.api + '/profiles' + username + '/follow',
+				method: 'POST'
+			}).then(function (res) {
+				return res.data;
+			});
+		}
+
+		// Unfollow
+
+	}, {
+		key: 'unfollow',
+		value: function unfollow(username) {
+			return this._$http({
+				url: this._AppConstants.api + '/profiles' + username + '/follow',
+				method: 'DELETE'
+			}).then(function (res) {
+				return res.data;
+			});
+		}
 	}]);
 
 	return Profile;

@@ -1,6 +1,19 @@
 class FollowBtnCtrl {
-	contructor() {
+	contructor(Profile, User, $state) {
 		'ngInject';
+
+		this._Profile = Profile; 
+		this._User = User; 
+		this._$state = $state; 
+	}
+
+	submit() {
+		this.isSubmitting = true;
+
+		if(!this._User.current) {
+			this._$state.go('app.register');
+			return; 
+		}
 	}
 }
 
