@@ -1,5 +1,5 @@
 class FollowBtnCtrl {
-	contructor(Profile, User, $state) {
+	constructor(Profile, User, $state) {
 		'ngInject';
 
 		this._Profile = Profile; 
@@ -13,6 +13,26 @@ class FollowBtnCtrl {
 		if(!this._User.current) {
 			this._$state.go('app.register');
 			return; 
+		}
+
+		// If following already, unfollow
+		if (this.user.following) {
+			this._Profile.unfollow(this.user.username).then(
+				() => {
+					this.isSubmitting = false; 
+					this.user.following = false; 
+				}
+			)
+
+		// Otherwise, follow them
+
+		} else {
+			this._Profile.follow(this.user.username).then(
+				() => {
+					this.isSubmitting = false;
+					this.user.following = true; 
+				}
+			)
 		}
 	}
 }
