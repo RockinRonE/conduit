@@ -35559,12 +35559,22 @@ function AuthConfig($stateProvider, $httpProvider) {
 		url: '/login',
 		controller: 'AuthCtrl as $ctrl',
 		templateUrl: 'auth/auth.html',
-		title: 'Sign in'
+		title: 'Sign in',
+		resolve: {
+			auth: ["User", function auth(User) {
+				return User.ensureAuthIs(false);
+			}]
+		}
 	}).state('app.register', {
 		url: '/register',
 		controller: 'AuthCtrl as $ctrl',
 		templateUrl: 'auth/auth.html',
-		title: 'Sign up'
+		title: 'Sign up',
+		resolve: {
+			auth: ["User", function auth(User) {
+				return User.ensureAuthIs(false);
+			}]
+		}
 	});
 };
 
@@ -35589,6 +35599,7 @@ var AuthCtrl = function () {
 		_classCallCheck(this, AuthCtrl);
 
 		this._User = User;
+		this._$state = $state;
 
 		this.title = $state.current.title;
 		this.authType = $state.current.name.replace('app.', '');
@@ -35602,8 +35613,7 @@ var AuthCtrl = function () {
 			this.isSubmitting = true;
 
 			this._User.attemptAuth(this.authType, this.formData).then(function (res) {
-				_this.isSubmitting = false;
-				console.log(res);
+				_this._$state.go('app.home');
 			},
 			// CB for failure
 			function (err) {
@@ -36276,6 +36286,24 @@ var User = function () {
 					//Will boot them to homepage
 					);
 				}
+			return deferred.promise;
+		}
+	}, {
+		key: 'ensureAuthIs',
+		value: function ensureAuthIs(bool) {
+			var _this3 = this;
+
+			var deferred = this._$q.defer();
+
+			this.verifyAuth().then(function (authValid) {
+				//if it's the opposite, redirect home
+				if (authValid !== bool) {
+					_this3._$state.go('app.home');
+					deferred.resolve(false);
+				} else {
+					deferred.resolve(true);
+				}
+			});
 			return deferred.promise;
 		}
 	}]);
