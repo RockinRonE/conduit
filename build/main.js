@@ -35970,7 +35970,7 @@ function EditorConfig($stateProvider) {
 	'ngInject';
 
 	$stateProvider.state('app.editor', {
-		url: '/editor',
+		url: '/editor/:slug',
 		controller: 'EditorCtrl',
 		controllerAs: '$ctrl',
 		templateUrl: 'editor/editor.html',
@@ -35978,6 +35978,29 @@ function EditorConfig($stateProvider) {
 		resolve: {
 			auth: ["User", function auth(User) {
 				return User.ensureAuthIs(true);
+			}],
+			article: ["Articles", "User", "$state", "$stateParams", function article(Articles, User, $state, $stateParams) {
+				// If we're trying to edit an article
+				if ($stateParams.slug) {
+					return Articles.get($stateParams.slug).then(function (article) {
+						// If the current user is the author, resolve the article data
+						if (User.current.username === article.author.username) {
+							return article;
+
+							// otherwise redirect to the home page
+						} else {
+								$state.go('app.home');
+							}
+					},
+
+					// If there's an error, (article DOE, etc), redirect to homepage
+					function (err) {
+						return $state.go('app.home');
+					});
+					// If a new article, return null
+				} else {
+						return null;
+					}
 			}]
 		}
 	});
@@ -35997,8 +36020,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var EditorCtrl = function () {
-	EditorCtrl.$inject = ["Articles", "$state"];
-	function EditorCtrl(Articles, $state) {
+	EditorCtrl.$inject = ["Articles", "article", "$state"];
+	function EditorCtrl(Articles, article, $state) {
 		'ngInject';
 
 		_classCallCheck(this, EditorCtrl);
@@ -36006,12 +36029,16 @@ var EditorCtrl = function () {
 		this._Articles = Articles;
 		this._$state = $state;
 
-		this.article = {
-			title: '',
-			description: '',
-			body: '',
-			tagList: []
-		};
+		if (!article) {
+			this.article = {
+				title: '',
+				description: '',
+				body: '',
+				tagList: []
+			};
+		} else {
+			this.article = article;
+		}
 	}
 
 	_createClass(EditorCtrl, [{
@@ -36378,6 +36405,19 @@ var Articles = function () {
 			};
 
 			return this._$http(request).then(function (res) {
+				return res.data.article;
+			});
+		}
+
+		// Retrieve a single article
+
+	}, {
+		key: 'get',
+		value: function get(slug) {
+			return this._$http({
+				url: this._AppConstants.api + '/articles/' + slug,
+				method: 'GET'
+			}).then(function (res) {
 				return res.data.article;
 			});
 		}
