@@ -36766,7 +36766,41 @@ _angular2.default.bootstrap(document, ['app'], {
   strictDi: true
 });
 
-},{"./article":8,"./auth":11,"./components":14,"./config/app.config":17,"./config/app.constants":18,"./config/app.run":19,"./config/app.templates":20,"./editor":24,"./home":27,"./layout":30,"./profile":31,"./services":35,"./settings":39,"angular":3,"angular-ui-router":1}],6:[function(require,module,exports){
+},{"./article":9,"./auth":12,"./components":15,"./config/app.config":18,"./config/app.constants":19,"./config/app.run":20,"./config/app.templates":21,"./editor":25,"./home":28,"./layout":31,"./profile":32,"./services":36,"./settings":40,"angular":3,"angular-ui-router":1}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ArticleActionsCtrl = function ArticleActionsCtrl(User) {
+	'ngInject';
+
+	// The user can only edit/delete this comment if they are the author
+
+	_classCallCheck(this, ArticleActionsCtrl);
+
+	if (User.current) {
+		this.canModify = User.current.username === this.article.author.username;
+	} else {
+		this.canModify = false;
+	}
+};
+ArticleActionsCtrl.$inject = ["User"];
+
+var ArticleActions = {
+	bindings: {
+		article: "="
+	},
+	controller: ArticleActionsCtrl,
+	templateUrl: 'article/article-actions.html'
+};
+
+exports.default = ArticleActions;
+
+},{}],7:[function(require,module,exports){
 'use strict';
 
 ArticleConfig.$inject = ["$stateProvider"];
@@ -36798,7 +36832,7 @@ function ArticleConfig($stateProvider) {
 
 exports.default = ArticleConfig;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36830,7 +36864,7 @@ ArticleCtrl.$inject = ["article", "$sce", "$rootScope"];
 
 exports.default = ArticleCtrl;
 
-},{"marked":4}],8:[function(require,module,exports){
+},{"marked":4}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36849,6 +36883,10 @@ var _article3 = require('./article.controller');
 
 var _article4 = _interopRequireDefault(_article3);
 
+var _articleActions = require('./article-actions.component');
+
+var _articleActions2 = _interopRequireDefault(_articleActions);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // Create the module where our functionality can attach to
@@ -36862,9 +36900,11 @@ articleModule.config(_article2.default);
 
 articleModule.controller('ArticleCtrl', _article4.default);
 
+articleModule.component('articleActions', _articleActions2.default);
+
 exports.default = articleModule;
 
-},{"./article.config":6,"./article.controller":7,"angular":3}],9:[function(require,module,exports){
+},{"./article-actions.component":6,"./article.config":7,"./article.controller":8,"angular":3}],10:[function(require,module,exports){
 'use strict';
 
 AuthConfig.$inject = ["$stateProvider", "$httpProvider"];
@@ -36899,7 +36939,7 @@ function AuthConfig($stateProvider, $httpProvider) {
 
 exports.default = AuthConfig;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36947,7 +36987,7 @@ var AuthCtrl = function () {
 
 exports.default = AuthCtrl;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -36981,7 +37021,7 @@ authModule.controller('AuthCtrl', _auth4.default);
 
 exports.default = authModule;
 
-},{"./auth.config":9,"./auth.controller":10,"angular":3}],12:[function(require,module,exports){
+},{"./auth.config":10,"./auth.controller":11,"angular":3}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36997,7 +37037,7 @@ var ArticleMeta = {
 
 exports.default = ArticleMeta;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37062,7 +37102,7 @@ var FollowBtn = {
 
 exports.default = FollowBtn;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37105,7 +37145,7 @@ componentsModule.component('articleMeta', _articleMeta2.default);
 
 exports.default = componentsModule;
 
-},{"./article-helpers/article-meta.component":12,"./buttons/follow-btn.component":13,"./list-errors.component":15,"./show-authed.directive":16,"angular":3}],15:[function(require,module,exports){
+},{"./article-helpers/article-meta.component":13,"./buttons/follow-btn.component":14,"./list-errors.component":16,"./show-authed.directive":17,"angular":3}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37120,7 +37160,7 @@ var ListErrors = {
 
 exports.default = ListErrors;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 ShowAuthed.$inject = ["User"];
@@ -37159,7 +37199,7 @@ function ShowAuthed(User) {
 
 exports.default = ShowAuthed;
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 
 AppConfig.$inject = ["$httpProvider", "$stateProvider", "$locationProvider", "$urlRouterProvider"];
@@ -37201,7 +37241,7 @@ function AppConfig($httpProvider, $stateProvider, $locationProvider, $urlRouterP
 
 exports.default = AppConfig;
 
-},{"./auth.interceptor":21}],18:[function(require,module,exports){
+},{"./auth.interceptor":22}],19:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37216,7 +37256,7 @@ var AppConstants = {
 
 exports.default = AppConstants;
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 AppRun.$inject = ["AppConstants", "$rootScope"];
@@ -37245,11 +37285,12 @@ function AppRun(AppConstants, $rootScope) {
 
 exports.default = AppRun;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 angular.module("templates", []).run(["$templateCache", function ($templateCache) {
-  $templateCache.put("article/article.html", "<div class=\"article-page\">\n\n  <!-- Banner for article title, action buttons -->\n  <div class=\"banner\">\n    <div class=\"container\">\n\n      <h1 ng-bind=\"::$ctrl.article.title\"></h1>\n\n      <article-meta article=\"$ctrl.article\">\n\n        <button class=\"btn btn-sm btn-outline-secondary\">\n          <i class=\"ion-plus-round\"></i>\n          &nbsp;\n          Follow Brad Green\n        </button>\n        &nbsp;\n        <button class=\"btn btn-sm btn-outline-primary\">\n          <i class=\"ion-heart\"></i>\n          &nbsp;\n          Favorite Article <span class=\"counter\">(29)</span>\n        </button>\n      </article-meta>\n\n    </div>\n  </div>\n\n\n\n  <!-- Main view. Contains article html and comments -->\n  <div class=\"container page\">\n\n    <!-- Article\'s HTML & tags rendered here -->\n    <div class=\"row article-content\">\n      <div class=\"col-xs-12\">\n\n        <div ng-bind-html=\"::$ctrl.article.body\"></div>\n\n        <ul class=\"tag-list\">\n          <li class=\"tag-default tag-pill tag-outline\"\n            ng-repeat=\"tag in ::$ctrl.article.tagList\">\n            {{ tag }}\n          </li>\n        </ul>\n\n      </div>\n    </div>\n\n    <hr />\n\n    <div class=\"article-actions\">\n\n      <!-- Show author info + favorite & follow buttons -->\n      <article-meta article=\"$ctrl.article\">\n\n        <button class=\"btn btn-sm btn-outline-secondary\">\n          <i class=\"ion-plus-round\"></i>\n          &nbsp;\n          Follow Brad Green\n        </button>\n        &nbsp;\n        <button class=\"btn btn-sm btn-outline-primary\">\n          <i class=\"ion-heart\"></i>\n          &nbsp;\n          Favorite Article <span class=\"counter\">(29)</span>\n        </button>\n\n      </article-meta>\n\n    </div>\n\n    <!-- Comments section -->\n    <div class=\"row\">\n      <div class=\"col-xs-12 col-md-8 offset-md-2\">\n\n        <div>\n          <form class=\"card comment-form\">\n            <div class=\"card-block\">\n              <textarea class=\"form-control\"\n                placeholder=\"Write a comment...\"\n                rows=\"3\"></textarea>\n            </div>\n            <div class=\"card-footer\">\n              <img class=\"comment-author-img\" />\n              <button class=\"btn btn-sm btn-primary\" type=\"submit\">\n               Post Comment\n              </button>\n            </div>\n          </form>\n        </div>\n\n        <div class=\"card\">\n          <div class=\"card-block\">\n            <p class=\"card-text\">This is an example comment.</p>\n          </div>\n          <div class=\"card-footer\">\n            <a class=\"comment-author\" href=\"\">\n              <img class=\"comment-author-img\" />\n            </a>\n            &nbsp;\n            <a class=\"comment-author\" href=\"\">\n              BradGreen\n            </a>\n            <span class=\"date-posted\">\n              Jan 20, 2016\n            </span>\n          </div>\n        </div>\n\n\n      </div>\n    </div>\n\n  </div>\n\n\n\n</div>\n");
+  $templateCache.put("article/article-actions.html", "<article-meta article=\"$ctrl.article\">\n <!-- If current user is the author, show edit/delete buttons -->\n <span ng-show=\"$ctrl.canModify\">\n\n   <a class=\"btn btn-outline-secondary btn-sm\"\n     ui-sref=\"app.editor({ slug: $ctrl.article.slug })\">\n     <i class=\"ion-edit\"></i> Edit Article\n   </a>\n\n   <button class=\"btn btn-outline-danger btn-sm\">\n     <i class=\"ion-trash-a\"></i> Delete Article\n   </button>\n\n</span>\n\n <!-- Otherwise, show favorite & follow buttons -->\n<span ng-hide=\"$ctrl.canModify\">\n\n  <button class=\"btn btn-sm btn-outline-secondary\">\n    <i class=\"ion-plus-round\"></i>\n    &nbsp;\n    Follow Brad Green\n  </button>\n  &nbsp;\n  <button class=\"btn btn-sm btn-outline-primary\">\n    <i class=\"ion-heart\"></i>\n    &nbsp;\n    Favorite Article <span class=\"counter\">(29)</span>\n  </button>\n\n</span>\n</article-meta>");
+  $templateCache.put("article/article.html", "<div class=\"article-page\">\n\n  <!-- Banner for article title, action buttons -->\n  <div class=\"banner\">\n    <div class=\"container\">\n\n      <h1 ng-bind=\"::$ctrl.article.title\"></h1>\n\n      <article-actions article=\"$ctrl.article\"></article-actions>\n\n    </div>\n  </div>\n\n\n\n  <!-- Main view. Contains article html and comments -->\n  <div class=\"container page\">\n\n    <!-- Article\'s HTML & tags rendered here -->\n    <div class=\"row article-content\">\n      <div class=\"col-xs-12\">\n\n        <div ng-bind-html=\"::$ctrl.article.body\"></div>\n\n        <ul class=\"tag-list\">\n          <li class=\"tag-default tag-pill tag-outline\"\n            ng-repeat=\"tag in ::$ctrl.article.tagList\">\n            {{ tag }}\n          </li>\n        </ul>\n\n      </div>\n    </div>\n\n    <hr />\n\n    <div class=\"article-actions\">\n\n      <!-- Show author info + favorite & follow buttons -->\n      <article-actions article=\"$ctrl.article\"></article-actions>\n\n    </div>\n\n    <!-- Comments section -->\n    <div class=\"row\">\n      <div class=\"col-xs-12 col-md-8 offset-md-2\">\n\n        <div>\n          <form class=\"card comment-form\">\n            <div class=\"card-block\">\n              <textarea class=\"form-control\"\n                placeholder=\"Write a comment...\"\n                rows=\"3\"></textarea>\n            </div>\n            <div class=\"card-footer\">\n              <img class=\"comment-author-img\" />\n              <button class=\"btn btn-sm btn-primary\" type=\"submit\">\n               Post Comment\n              </button>\n            </div>\n          </form>\n        </div>\n\n        <div class=\"card\">\n          <div class=\"card-block\">\n            <p class=\"card-text\">This is an example comment.</p>\n          </div>\n          <div class=\"card-footer\">\n            <a class=\"comment-author\" href=\"\">\n              <img class=\"comment-author-img\" />\n            </a>\n            &nbsp;\n            <a class=\"comment-author\" href=\"\">\n              BradGreen\n            </a>\n            <span class=\"date-posted\">\n              Jan 20, 2016\n            </span>\n          </div>\n        </div>\n\n\n      </div>\n    </div>\n\n  </div>\n\n\n\n</div>\n");
   $templateCache.put("auth/auth.html", "<div class=\"auth-page\">\n  <div class=\"container page\">\n    <div class=\"row\">\n\n      <div class=\"col-md-6 offset-md-3 col-xs-12\">\n        <h1 class=\"text-xs-center\" ng-bind=\"::$ctrl.title\"></h1>\n        <p class=\"text-xs-center\">\n          <a ui-sref=\"app.login\"\n            ng-show=\"$ctrl.authType === \'register\'\">\n            Have an account?\n          </a>\n          <a ui-sref=\"app.register\"\n            ng-show=\"$ctrl.authType === \'login\'\">\n            Need an account?\n          </a>\n        </p>\n\n        <list-errors errors=\"$ctrl.errors\"></list-errors>\n\n        <form ng-submit=\"$ctrl.submitForm()\">\n          <fieldset ng-disabled=\"$ctrl.isSubmitting\">\n\n            <fieldset class=\"form-group\" ng-show=\"$ctrl.authType ===\'register\'\">\n              <input class=\"form-control form-control-lg\"\n                type=\"text\"\n                placeholder=\"Username\"\n                ng-model=\"$ctrl.formData.username\" />\n            </fieldset>\n\n            <fieldset class=\"form-group\">\n              <input class=\"form-control form-control-lg\"\n                type=\"email\"\n                placeholder=\"Email\"\n                ng-model=\"$ctrl.formData.email\" />\n            </fieldset>\n\n            <fieldset class=\"form-group\">\n              <input class=\"form-control form-control-lg\"\n                type=\"password\"\n                placeholder=\"Password\"\n                ng-model=\"$ctrl.formData.password\" />\n            </fieldset>\n\n            <button class=\"btn btn-lg btn-primary pull-xs-right\"\n              type=\"submit\" ng-bind=\"$ctrl.title\">\n            </button>\n\n          </fieldset>\n        </form>\n      </div>\n\n    </div>\n  </div>\n</div>");
   $templateCache.put("components/list-errors.html", "<ul class=\"error-messages\" ng-show=\"$ctrl.errors\">\n	<div ng-repeat=\"(field, errors) in $ctrl.errors\">\n	  <li ng-repeat=\"error in errors\">\n	    {{field}} {{error}} \n	  </li>\n	</div>\n</ul>");
   $templateCache.put("editor/editor.html", "<div class=\"editor-page\">\n  <div class=\"container page\">\n    <div class=\"row\">\n      <div class=\"col-md-10 offset-md-1 col-xs-12\">\n\n        <list-errors errors=\"$ctrl.errors\"></list-errors>\n\n        <form>\n          <fieldset ng-disabled=\"$ctrl.isSubmitting\">\n\n            <fieldset class=\"form-group\">\n              <input class=\"form-control form-control-lg\"\n                ng-model=\"$ctrl.article.title\"\n                type=\"text\"\n                placeholder=\"Article Title\" />\n            </fieldset>\n\n            <fieldset class=\"form-group\">\n              <input class=\"form-control\"\n                ng-model=\"$ctrl.article.description\"\n                type=\"text\"\n                placeholder=\"What\'s this article about?\" />\n            </fieldset>\n\n            <fieldset class=\"form-group\">\n              <textarea class=\"form-control\"\n                rows=\"8\"\n                ng-model=\"$ctrl.article.body\"\n                placeholder=\"Write your article (in markdown)\">\n              </textarea>\n            </fieldset>\n\n            <fieldset class=\"form-group\">\n              <input class=\"form-control\"\n                type=\"text\"\n                placeholder=\"Enter tags\"\n                ng-model=\"$ctrl.tagField\" \n                ng-keyup=\"$event.keyCode == 13 && $ctrl.addTag()\" />\n\n\n              <div class=\"tag-list\">\n                <span ng-repeat=\"tag in $ctrl.article.tagList\"\n                      class=\"tag-default tag-pill\">\n                  <i class=\"ion-close-round\" ng-click=\"$ctrl.removeTag(tag)\"></i>\n                  {{ tag }}\n                </span>\n              </div>\n            </fieldset>\n\n            <button class=\"btn btn-lg pull-xs-right btn-primary\" type=\"button\"\n                ng-click=\"$ctrl.submit()\">\n              Publish Article\n            </button>\n\n          </fieldset>\n        </form>\n\n      </div>\n    </div>\n  </div>\n</div>");
@@ -37263,7 +37304,7 @@ angular.module("templates", []).run(["$templateCache", function ($templateCache)
   $templateCache.put("components/buttons/follow-btn.html", "<button\n	class=\"btn btn-sm action-btn\"\n	ng-class=\"{ \'disabled\' : $ctrl.isSubmitting, \n							\'btn-outline-secondary\' : !$ctrl.user.following,\n							\'btn-secondary\': $ctrl.user.following }\"\n	ng-click=\"$ctrl.submit()\">\n	<i class=\"ion-plus-round\"></i>\n	&nbsp;\n	{{ $ctrl.user.following ? \'Unfollow\' : \'Follow\' }} {{ $ctrl.user.username }}\n</button>");
 }]);
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 authInterceptor.$inject = ["JWT", "AppConstants", "$window", "$q"];
@@ -37297,7 +37338,7 @@ function authInterceptor(JWT, AppConstants, $window, $q) {
 
 exports.default = authInterceptor;
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 EditorConfig.$inject = ["$stateProvider"];
@@ -37346,7 +37387,7 @@ function EditorConfig($stateProvider) {
 
 exports.default = EditorConfig;
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37416,7 +37457,7 @@ var EditorCtrl = function () {
 
 exports.default = EditorCtrl;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37450,7 +37491,7 @@ editorModule.controller('EditorCtrl', _editor4.default);
 
 exports.default = editorModule;
 
-},{"./editor.config":22,"./editor.controller":23,"angular":3}],25:[function(require,module,exports){
+},{"./editor.config":23,"./editor.controller":24,"angular":3}],26:[function(require,module,exports){
 'use strict';
 
 HomeConfig.$inject = ["$stateProvider"];
@@ -37471,7 +37512,7 @@ function HomeConfig($stateProvider) {
 
 exports.default = HomeConfig;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37491,7 +37532,7 @@ HomeCtrl.$inject = ["AppConstants"];
 
 exports.default = HomeCtrl;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37525,7 +37566,7 @@ homeModule.controller('HomeCtrl', _home4.default);
 
 exports.default = homeModule;
 
-},{"./home.config":25,"./home.controller":26,"angular":3}],28:[function(require,module,exports){
+},{"./home.config":26,"./home.controller":27,"angular":3}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37553,7 +37594,7 @@ var AppFooter = {
 
 exports.default = AppFooter;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37585,7 +37626,7 @@ var AppHeader = {
 
 exports.default = AppHeader;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37617,7 +37658,7 @@ layoutModule.component('appFooter', _footer2.default);
 
 exports.default = layoutModule;
 
-},{"./footer.component":28,"./header.component":29,"angular":3}],31:[function(require,module,exports){
+},{"./footer.component":29,"./header.component":30,"angular":3}],32:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37651,7 +37692,7 @@ profileModule.controller('ProfileCtrl', _profile4.default);
 
 exports.default = profileModule;
 
-},{"./profile.config":32,"./profile.controller":33,"angular":3}],32:[function(require,module,exports){
+},{"./profile.config":33,"./profile.controller":34,"angular":3}],33:[function(require,module,exports){
 'use strict';
 
 ProfileConfig.$inject = ["$stateProvider"];
@@ -37680,7 +37721,7 @@ function ProfileConfig($stateProvider) {
 
 exports.default = ProfileConfig;
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37709,7 +37750,7 @@ ProfileCtrl.$inject = ["profile", "User"];
 
 exports.default = ProfileCtrl;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37791,7 +37832,7 @@ var Articles = function () {
 
 exports.default = Articles;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37835,7 +37876,7 @@ servicesModule.service('Articles', _articles2.default);
 
 exports.default = servicesModule;
 
-},{"./articles.service":34,"./jwt.service":36,"./profile.service":37,"./user.service":38,"angular":3}],36:[function(require,module,exports){
+},{"./articles.service":35,"./jwt.service":37,"./profile.service":38,"./user.service":39,"angular":3}],37:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37879,7 +37920,7 @@ var JWT = function () {
 
 exports.default = JWT;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -37947,7 +37988,7 @@ var Profile = function () {
 
 exports.default = Profile;
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38089,7 +38130,7 @@ var User = function () {
 
 exports.default = User;
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -38123,7 +38164,7 @@ settingsModule.controller('SettingsCtrl', _settings4.default);
 
 exports.default = settingsModule;
 
-},{"./settings.config":40,"./settings.controller":41,"angular":3}],40:[function(require,module,exports){
+},{"./settings.config":41,"./settings.controller":42,"angular":3}],41:[function(require,module,exports){
 'use strict';
 
 SettingsConfig.$inject = ["$stateProvider"];
@@ -38149,7 +38190,7 @@ function SettingsConfig($stateProvider) {
 
 exports.default = SettingsConfig;
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
